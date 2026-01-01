@@ -1,57 +1,60 @@
 from django.shortcuts import render
 from .models import *
 from django.contrib import messages
+from django.db import IntegrityError
 
 # Create your views here.
 
 def add_student(request):
-    if request.method -- "POST":
-        first_name = request.Post.get("first_name")
-        last_name = request.Post.get("last_name")
-        student_id = request.Post.get("student_id")
-        gender = request.Post.get("gender")
-        date_of_birth = request.Post.get("date_of_birth")
-        student_class = request.Post.get("student_class")
-        religion = request.Post.get("religion")
-        address = request.Post.get("address")
-        joining_date = request.Post.get("joining_date")
-        mobile_number = request.Post.get("mobile_number")
-        admission_number = request.Post.get("admission_number")
-        section = request.Post.get("section")
-        student_image = request.Post.get("student_image")  
-        
-        #parent details from form
-        parent = Parent.objects.create(
-            father_name=request.Post.get("father_name"),
-            mother_name=request.Post.get("mother_name"),
-            father_mobile=request.Post.get("father_mobile"),
-            father_email=request.Post.get("father_email"),
-            mother_email=request.Post.get("mother_email"),
-            mother_mobile=request.Post.get("mother_mobile"),
-            father_occupation=request.Post.get("father_occupation"),
-            mother_occupation=request.Post.get("mother_occupation"),
-            address=request.Post.get("parent_address"),
-        )
+    if request.method == "POST":
+        try:
+            first_name = request.POST.get("first_name")
+            last_name = request.POST.get("last_name")
+            student_id = request.POST.get("student_id")
+            gender = request.POST.get("gender")
+            date_of_birth = request.POST.get("date_of_birth")
+            student_class = request.POST.get("student_class")
+            religion = request.POST.get("religion")
+            joining_date = request.POST.get("joining_date")
+            mobile_number = request.POST.get("mobile_number")
+            admission_number = request.POST.get("admission_number")
+            section = request.POST.get("section")
+            student_image = request.POST.get("student_image")  
+            
+            #parent details from form
+            parent = Parent.objects.create(
+                father_name=request.POST.get("father_name"),
+                mother_name=request.POST.get("mother_name"),
+                father_mobile=request.POST.get("father_mobile"),
+                father_email=request.POST.get("father_email"),
+                mother_email=request.POST.get("mother_email"),
+                mother_mobile=request.POST.get("mother_mobile"),
+                father_occupation=request.POST.get("father_occupation"),
+                mother_occupation=request.POST.get("mother_occupation"),
+                present_address=request.POST.get("present_address"),
+                permanent_address=request.POST.get("permanent_address")
+            )
 
-        #save student information
-        student = Student.objects.create(
-            first_name=first_name,
-            last_name=last_name,
-            student_id=student_id,
-            gender=gender,
-            date_of_birth=date_of_birth,    
-            student_class=student_class,
-            religion=religion,
-            address=address,
-            joining_date=joining_date,
-            mobile_number=mobile_number,
-            admission_number=admission_number,
-            section=section,
-            student_image=student_image,
-            parent=parent
-        )
-        messages.success(request, "Student added successfully.")
-        return render(request, "students/student_list.html")
+            #save student information
+            student = Student.objects.create(
+                first_name=first_name,
+                last_name=last_name,
+                student_id=student_id,
+                gender=gender,
+                date_of_birth=date_of_birth,    
+                student_class=student_class,
+                religion=religion,
+                joining_date=joining_date,
+                mobile_number=mobile_number,
+                admission_number=admission_number,
+                section=section,
+                student_image=student_image,
+                parent=parent
+            )
+            messages.success(request, "Student added successfully.")
+        except IntegrityError:
+            messages.error(request, "Student ID must be unique. A student with this ID already exists.")
+        #return render(request, "students/student_list.html")
 
     return render(request, "students/add-student.html")
 

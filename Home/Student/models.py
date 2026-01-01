@@ -8,6 +8,7 @@ class Parent(models.Model):
     father_mobile = models.CharField(max_length=15)
     father_email = models.EmailField(max_length=100)
     mother_name = models.CharField(max_length=100)
+    mother_occupation = models.CharField(max_length=100, default="Unknown")
     mother_email = models.EmailField(max_length=100)
     mother_mobile = models.CharField(max_length=15)
     present_address = models.TextField()
@@ -32,12 +33,19 @@ class Student(models.Model):
     parent = models.OneToOneField(Parent, on_delete=models.CASCADE)
     slug = models.SlugField(max_length=200, unique=True, blank=True)
 
-
-    def save(self, *args,**kwargs):
+    def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(f"{self.first_name.lower()}-{self.last_name.lower()}-{self.student_id}")
-        
-        super(Student, self).save(*args, **kwargs)
+            base_slug = slugify(f"{self.first_name}-{self.last_name}")
+            slug = base_slug
+            count = 1
+
+            while Student.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{count}"
+                count += 1
+
+            self.slug = slug
+
+        super().save(*args, **kwargs)
 
     def __str__(self) -> str:
         return self.first_name + " " + self.last_name + " " + self.student_id
