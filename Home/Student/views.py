@@ -59,7 +59,11 @@ def add_student(request):
     return render(request, "students/add-student.html")
 
 def student_list(request):
-    return render(request, "students/students.html")
+    student_list = Student.objects.select_related('parent').all()
+    context = {
+        'student' : student_list
+    }
+    return render(request, "students/students.html", context)
 
 def edit_student(request):
     return render(request, "students/edit-student.html")
