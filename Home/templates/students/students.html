@@ -39,19 +39,20 @@
                                     </tr>
                                  </thead>
                                  <tbody>
+                                    {%for student in student_list%}
                                     <tr>
-                                       <td>PRE2209</td>
+                                       <td>{{student.student_id}}</td>
                                        <td>
                                           <h2 class="table-avatar">
                                              <a href="{% url 'view_student' student.student_id %}" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src="({student.student_image.url})" alt="User Image"></a>
                                              <a href="{% url 'view_student' student.student_id %}">({student.first_name}) ({student.last_name})</a> 
                                           </h2>
                                        </td>
-                                       <td>10 A</td>
-                                       <td>2 Feb 2002</td>
-                                       <td>Jeffrey Wong</td>
-                                       <td>097 3584 5870</td>
-                                       <td>911 Deer Ridge Drive,USA</td>
+                                       <td>{{student.student_class}}</td>
+                                       <td>{{student.date_of_birth | date: "d M Y"}}</td>
+                                       <td>{{student.parent.father_name}}</td>
+                                       <td>{{student.mobile_number}}</td>
+                                       <td>{{student.parent.present_address}}</td>
                                        <td class="text-right">
                                           <div class="actions">
                                              <a href="edit-student.html" class="btn btn-sm bg-success-light mr-2">
@@ -63,6 +64,7 @@
                                           </div>
                                        </td>
                                     </tr>
+                                    {% endfor %}
                                     <tr>
                                        <td>PRE2213</td>
                                        <td>
