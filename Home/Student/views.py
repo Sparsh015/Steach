@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import *
 from django.contrib import messages
 from django.db import IntegrityError
+from django.http import HttpResponseForbidden
 
 # Create your views here.
 def add_student(request):
@@ -66,7 +67,7 @@ def student_list(request):
 
 def edit_student(request, slug):
     student = get_object_or_404(Student, student_id=slug)
-    parent = student.parent
+    parent = student.parent if hasattr(student, 'parent') else None
 
     if request.method == "POST":
 
@@ -114,3 +115,14 @@ def view_student(request,slug):
         'student' : student
     }
     return render(request, "students/student-details.html",context)
+
+
+
+def delete_student(request, slug):
+    if request.method == "POST":
+        student = get_object_or_404(Student, student_id=slug)
+        student.delete()
+        messages.success(request, "Student deleted successfully.")
+        return redirect("student_list")
+
+    return HttpResponseForbidden()
