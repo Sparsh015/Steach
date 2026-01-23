@@ -66,7 +66,7 @@ def student_list(request):
     })
 
 def edit_student(request, slug):
-    student = get_object_or_404(Student, student_id=slug)
+    student = get_object_or_404(Student, slug=slug)
     parent = student.parent if hasattr(student, 'parent') else None
 
     if request.method == "POST":
@@ -120,7 +120,7 @@ def view_student(request,slug):
 
 def delete_student(request, slug):
     if request.method == "POST":
-        student = get_object_or_404(Student, student_id=slug)
+        student = get_object_or_404(Student, slug=slug)
         student.delete()
         messages.success(request, "Student deleted successfully.")
         return redirect("student_list")
