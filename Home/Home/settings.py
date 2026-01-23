@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'school',
     'Student',
+    'home_auth',
     
 ]
 
