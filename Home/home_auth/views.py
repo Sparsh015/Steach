@@ -34,3 +34,29 @@ def signup_view(request):
     return redirect('index')
 
     return render(request, 'authentication/register.html')
+
+def login_view(request):
+    if request.method == 'POST':
+        email = request.POST['email']
+        password = request.POST['password']
+
+        user = authenticate(request, username = email, password=password)
+        if user is not None:
+            login(request, user)
+            messages.success(request, 'Logged in successfully.')
+            return redirect('index')
+        
+        if user.is_admin:
+            return redirect('admin_dashboard')
+        elif user.is_teacher:
+            return redirect('teacher_dashboard')
+        elif user.is_student:
+            return redirect('dashboard')
+        
+        else:
+            messages.error(request, 'Invalid user role')
+            return redirect('index')
+        
+    else:
+        messages.error(request, 'Invalid email or password')
+    return render(request, 'authentication/login.html')
