@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth import login
 from django.shortcuts import redirect
 from django.contrib import messages
-from .models import CustomUser as User
+from .models import CustomUser as User, PasswordResetRequest
 # Create your views here.
 def signup_view(request):
     if request.method == 'POST':
@@ -60,3 +60,17 @@ def login_view(request):
     else:
         messages.error(request, 'Invalid email or password')
     return render(request, 'authentication/login.html')
+
+def forgot_password_view(request):
+    if request.method == 'POST':
+        email = request.POST['email']
+        try:
+            user = User.objects.get(email=email)
+            reset_request = PasswordResetRequest.objects.create(user=user, email=email)
+            reset_request.send_reset_email()
+            messages.success(request, 'Password reset email sent.')
+            return redirect('login')
+        except User.DoesNotExist:
+            messages.error(request, 'Email not found.')
+            return redirect('forgot_password')
+    return render(request, 'authentication/forgot_password.html')
