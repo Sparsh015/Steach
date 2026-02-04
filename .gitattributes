@@ -1,5 +1,2 @@
-*.html linguist-detectable=true
-*.css linguist-detectable=true
 *.py linguist-detectable=true
-templates/** linguist-detectable=false
-static/** linguist-detectable=false
+
