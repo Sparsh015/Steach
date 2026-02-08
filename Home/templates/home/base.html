@@ -110,9 +110,22 @@
                   </div>
                </li>
                <li class="nav-item dropdown has-arrow">
-                  <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-                  <span class="user-img"><img class="rounded-circle" src="assets/img/profiles/avatar-01.jpg" width="31" alt="Ryan Taylor"></span>
+                  <a href="javascript:void(0);" class="dropdown-toggle nav-link">
+                  <span class="user-img">
+                  <img class="rounded-circle"
+                     src="{% static 'assets/img/profiles/avatar-01.jpg' %}"
+                     width="31"
+                     alt="Ryan Taylor">
+                     </span>
                   </a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                  <a class="dropdown-item" href="{% url 'logout' %}">
+                     <i class="fas fa-sign-out-alt me-2"></i> Logout
+                  </a>
+               </div>
+               </li>
+
+
                   <div class="dropdown-menu">
                      <div class="user-header">
                         <div class="avatar avatar-sm">
@@ -219,7 +232,7 @@
                         <ul>
                            <li><a href="{% url 'login'%}">Login</a></li>
                            <li><a href="{% url 'signup'%}">Register</a></li>
-                           <li><a href="{% url 'forgot-password'%}">Forgot Password</a></li>
+                           <li><a href="{% url 'forgot_password'%}">Forgot Password</a></li>
                            <li><a href="error-404.html">Error Page</a></li>
                         </ul>
                      </li>

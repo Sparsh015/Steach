@@ -3,6 +3,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import redirect
 from django.contrib import messages
 from .models import CustomUser as User, PasswordResetRequest
+
 # Create your views here.
 def signup_view(request):
     if request.method == 'POST':
@@ -20,7 +21,7 @@ def signup_view(request):
             last_name=last_name,
             password=password,
         )
-            
+         
         if role == 'student':
             user.is_student = True
         elif role == 'teacher':
@@ -35,6 +36,7 @@ def signup_view(request):
 
     return render(request, 'authentication/register.html')
 
+
 def login_view(request):
     if request.method == 'POST':
         email = request.POST['email']
@@ -47,7 +49,6 @@ def login_view(request):
         
         if user is not None:
             login(request, user)
-            
         
             if user.is_admin:
                 return redirect('admin_dashboard')
@@ -58,11 +59,10 @@ def login_view(request):
             messages.success(request, 'Logged in successfully.')
             return redirect('index')
         
-        
-        
     else:
         messages.error(request, 'Invalid email or password')
     return render(request, 'authentication/login.html')
+
 
 def forgot_password_view(request):
     if request.method == 'POST':
@@ -78,21 +78,29 @@ def forgot_password_view(request):
             return redirect('forgot_password')
     return render(request, 'authentication/forgot_password.html')
 
-def reset_password_view(request, token):
-    reset_request = PasswordResetRequest.objects.filter(token=token, is_used=False).first()
 
-    if not reset_request or reset_request.is_valid():
+def reset_password_view(request, token):
+    reset_request = PasswordResetRequest.objects.filter(
+        token=token,
+    ).first()
+
+    if not reset_request or not reset_request.is_valid():
         messages.error(request, 'Invalid or expired link.')
         return redirect('index')
-    
+
     if request.method == 'POST':
         new_password = request.POST['new_password']
         reset_request.user.set_password(new_password)
         reset_request.user.save()
+
+        reset_request.is_used = True
+        reset_request.save()
+
         messages.success(request, 'Password reset successfully.')
         return redirect('login')
-    
-    return render(request, 'reset_password.html', {'token': token})
+
+    return render(request, 'authentication/reset_password.html', {'token': token})
+
 
 def logout_view(request):
     logout(request)
