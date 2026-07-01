@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.crypto import get_random_string
 from django.utils import timezone  
+import datetime
 from django.core.mail import send_mail
 from django.conf import settings
 import uuid
@@ -37,14 +38,17 @@ class PasswordResetRequest(models.Model):
     email = models.EmailField()
     token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    is_used = models.BooleanField(default=False)
 
-    TOKEN_VALIDITY_PERIOD = timezone.timedelta(hours=1)
+    TOKEN_VALIDITY_PERIOD = datetime.timedelta(hours=1)
 
     def is_valid(self):
+        if self.is_used:
+            return False
         return timezone.now() < self.created_at + self.TOKEN_VALIDITY_PERIOD
 
     def send_reset_email(self):
-        reset_link = f"http://127.0.0.1:8000/authentication/reset-password/{self.token}/"
+        reset_link = f"http://127.0.0.1:8000/authentication/reset_password/{self.token}/"
         send_mail(
             'Password Reset Request',
             f'Click the link to reset your password: {reset_link}',

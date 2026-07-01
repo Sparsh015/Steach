@@ -115,6 +115,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'noreply@localhost'
 
 #settings.py
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

@@ -1,10 +1,27 @@
+from functools import wraps
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import *
 from django.contrib import messages
 from django.db import IntegrityError
 from django.http import HttpResponseForbidden
+from django.contrib.auth.decorators import login_required
+from school.models import TeacherAttendance
+
+
+def teacher_required(view_func):
+    @wraps(view_func)
+    def _wrapped(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        if not (request.user.is_teacher or request.user.is_admin):
+            messages.error(request, 'Only teachers can manage student records.')
+            return redirect('dashboard')
+        return view_func(request, *args, **kwargs)
+    return _wrapped
 
 # Create your views here.
+@login_required(login_url='login')
+@teacher_required
 def add_student(request):
     if request.method == "POST":
         try:
@@ -59,12 +76,16 @@ def add_student(request):
 
     return render(request, "students/add-student.html")
 
+@login_required(login_url='login')
+@teacher_required
 def student_list(request):
     students = Student.objects.select_related('parent').all()
     return render(request, "students/students.html", {
         'student_list': students
     })
 
+@login_required(login_url='login')
+@teacher_required
 def edit_student(request, slug):
     student = get_object_or_404(Student, slug=slug)
     parent = student.parent if hasattr(student, 'parent') else None
@@ -109,6 +130,8 @@ def edit_student(request, slug):
         'parent': parent
     })
 
+@login_required(login_url='login')
+@teacher_required
 def view_student(request,slug):
     student = get_object_or_404(Student, student_id = slug)
     context = {
@@ -118,6 +141,8 @@ def view_student(request,slug):
 
 
 
+@login_required(login_url='login')
+@teacher_required
 def delete_student(request, slug):
     if request.method == "POST":
         student = get_object_or_404(Student, slug=slug)
@@ -126,3 +151,71 @@ def delete_student(request, slug):
         return redirect("student_list")
 
     return HttpResponseForbidden()
+
+
+@login_required(login_url='login')
+def student_profile(request):
+    normalized_first = (request.user.first_name or '').strip()
+    normalized_last = (request.user.last_name or '').strip()
+
+    has_student_profile = Student.objects.filter(
+        first_name__iexact=normalized_first,
+        last_name__iexact=normalized_last
+    ).exists()
+
+    if not (request.user.is_student or has_student_profile):
+        messages.error(request, 'Only students can access this page.')
+        if request.user.is_teacher:
+            return redirect('teacher_students')
+        if request.user.is_admin:
+            return redirect('admin_allocation')
+        return redirect('index')
+
+    try:
+        student = Student.objects.filter(
+            first_name__iexact=normalized_first,
+            last_name__iexact=normalized_last
+        ).first()
+    except Student.DoesNotExist:
+        student = None
+        messages.error(request, "Student profile not found.")
+
+    if student is None:
+        return render(request, "students/profile.html", {
+            'student': None,
+            'assigned_teachers': [],
+        })
+
+    if request.method == "POST":
+        student.first_name = request.POST.get("first_name") or student.first_name
+        student.last_name = request.POST.get("last_name") or student.last_name
+        student.gender = request.POST.get("gender") or student.gender
+        student.date_of_birth = request.POST.get("date_of_birth") or student.date_of_birth
+        student.mobile_number = request.POST.get("mobile_number") or student.mobile_number
+        student.section = request.POST.get("section") or student.section
+        student.student_class = request.POST.get("student_class") or student.student_class
+
+        if request.FILES.get("student_image"):
+            student.student_image = request.FILES.get("student_image")
+
+        student.save()
+        messages.success(request, "Your profile has been updated successfully.")
+        return redirect('student_profile')
+
+    assigned_teachers = []
+    for teacher in student.teachers.all():
+        latest_attendance = TeacherAttendance.objects.filter(teacher=teacher).order_by('-date').first()
+        assigned_teachers.append({
+            'teacher': teacher,
+            'status': latest_attendance.status if latest_attendance else 'Not marked',
+        })
+
+    return render(request, "students/profile.html", {
+        'student': student,
+        'assigned_teachers': assigned_teachers,
+    })
+
+
+@login_required(login_url='login')
+def student_edit_profile(request):
+    return redirect('student_profile')

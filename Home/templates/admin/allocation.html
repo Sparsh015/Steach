@@ -1,0 +1,53 @@
+{% extends "home/base.html" %}
+{% block body %}
+<div class="page-wrapper">
+  <div class="content container-fluid">
+    <div class="page-header">
+      <div class="row">
+        <div class="col-sm-12">
+          <h3 class="page-title">Student-Teacher Allocation</h3>
+          <p class="text-muted">Assign or remove students from teachers.</p>
+        </div>
+      </div>
+    </div>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-info">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <div class="card">
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label>Teacher</label>
+            <select class="form-control" name="teacher_id" required>
+              <option value="">Select teacher</option>
+              {% for teacher in teachers %}
+                <option value="{{ teacher.id }}" {% if selected_teacher and selected_teacher.id == teacher.id %}selected{% endif %}>{{ teacher.first_name }} {{ teacher.last_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Students</label>
+            <div class="border rounded p-3">
+              {% for student in students %}
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="student_ids" value="{{ student.id }}" id="student_{{ student.id }}"
+                    {% for assigned_student in selected_teacher.students.all %}{% if assigned_student.id == student.id %}checked{% endif %}{% endfor %}>
+                  <label class="form-check-label" for="student_{{ student.id }}">{{ student.first_name }} {{ student.last_name }} ({{ student.student_id }})</label>
+                </div>
+              {% empty %}
+                <p class="text-muted mb-0">No students found.</p>
+              {% endfor %}
+            </div>
+          </div>
+          <button class="btn btn-primary" type="submit">Save Allocation</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
