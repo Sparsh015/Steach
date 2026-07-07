@@ -1,53 +1,225 @@
-🎓 Steach
-Smart Teaching & Learning Platform
+# Steach - Smart Teacher-Student Management Platform
 
-Steach is a streamlined web application designed to simplify the interaction between educators and students. Built with a focus on ease of use, it allows for efficient management of course materials and student engagement.
+Steach is a Django-based student management system designed to simplify communication and administration between schools, teachers, students, and parents.
 
-🛠 Tech Stack
-Backend: Python (Django)
-Frontend: HTML5, CSS3, JavaScript 
-Database: SQLite 
-Templates: Jinja2
+The platform provides role-based access control, student-teacher management, attendance tracking, and secure authentication workflows.
 
-✨ Key Features
-Course Management: Create, update, and organize educational content.
+---
 
-Student Portal: Easy access to lessons, assignments, and resources.
+## 🚀 Features
 
-Responsive UI: Clean, modern interface that works on mobile and desktop.
+### 🔐 Authentication & Authorization
 
-Authentication: Secure login system for different user roles.
+- Role-based authentication for:
+  - Admin
+  - Teacher
+  - Student
 
-⚙️ Installation
-To get this project running locally, follow these steps:
+- Secure user login and session management
+- Password hashing
+- UUID-based password recovery system
+- Protected routes using custom authorization decorators
 
-Clone the Repository
+---
 
---Bash
+### 👨‍🏫 Teacher Management
+
+- Manage teacher profiles
+- Assign students to teachers
+- View allocated students
+- Track teacher-related information
+
+---
+
+### 🎒 Student Management
+
+- Student profile management
+- Parent information handling
+- Teacher allocation system
+- Student dashboard
+
+---
+
+### 📅 Attendance Management
+
+- Teacher attendance tracking
+- Store and manage attendance records
+- Database-driven attendance system
+
+---
+
+## 🛠 Tech Stack
+
+**Backend**
+
+- Python
+- Django
+
+**Database**
+
+- SQLite
+- Django ORM
+
+**Frontend**
+
+- HTML
+- CSS
+- JavaScript
+- Django Templates
+
+**Tools**
+
+- Git
+- GitHub
+- VS Code
+
+---
+
+## 🏗 System Architecture
+
+```text
+              User
+               |
+               v
+
+        Django Application
+
+               |
+    -------------------------
+    |           |           |
+
+ Authentication  Views   Templates
+
+    |
+    v
+
+Business Logic Layer
+
+    |
+    v
+
+Django ORM
+
+    |
+    v
+
+SQLite Database
+
+
+Tables:
+
+Users
+Students
+Teachers
+Parents
+Attendance
+```
+
+---
+
+## Database Design
+
+The project uses relational database concepts through Django ORM.
+
+Relationships implemented:
+
+- One-to-One relationships
+- ForeignKey relationships
+- Many-to-Many relationships
+
+Example:
+
+```text
+Teacher
+   |
+   |
+Many Students
+
+
+Student
+   |
+   |
+Parent Details
+
+
+Users
+   |
+   |
+Role Based Profiles
+```
+
+---
+
+## Installation
+
+Clone the repository:
+
+```bash
 git clone https://github.com/Sparsh015/Steach.git
+```
+
+Move into project:
+
+```bash
 cd Steach
+```
 
-Set up a Virtual Environment
---Bash
+Create virtual environment:
+
+```bash
 python -m venv venv
-# Activate on Windows:
+```
+
+Activate environment:
+
+Windows:
+
+```bash
 venv\Scripts\activate
-# Activate on Mac/Linux:
+```
+
+Mac/Linux:
+
+```bash
 source venv/bin/activate
-Install Dependencies
-(Ensure you have a requirements.txt file in your repo)
+```
 
---Bash
+Install dependencies:
+
+```bash
 pip install -r requirements.txt
-Run the Application
+```
 
---Bash
-# For Django:
+Run migrations:
+
+```bash
+python manage.py migrate
+```
+
+Start server:
+
+```bash
 python manage.py runserver
-📂 Project Structure
-Plaintext
-├── static/          # CSS, JS, and Images
-├── templates/       # HTML files
-├── app.py           # Main application logic
-├── models.py        # Database schemas
-└── requirements.txt # Project dependencies
+```
+
+Open:
+
+```text
+http://127.0.0.1:8000/
+```
+
+---
+
+## Key Learnings
+
+- Django MVC/MVT architecture
+- Authentication and authorization
+- ORM relationships
+- Database modeling
+- Session management
+- Secure user workflows
+- Query optimization
+
+---
+
+Django application focusing on authentication, database design, and role-based management systems.
